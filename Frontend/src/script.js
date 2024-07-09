@@ -1,9 +1,12 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
-import pendant3 from "./pendant3.glb";
-import { RGBELoader } from "three/examples/jsm/Addons.js";
-import scene10 from "./scene10.glb";
+import { RGBELoader } from "three/examples/jsm/loaders/RGBELoader";
+import { OBJLoader } from "three/examples/jsm/loaders/OBJLoader";
+import model7 from "./model7.glb";
+import model1 from "./model1.glb";
+import model2 from "./model2.glb";
+import model6 from "./model6.glb";
 
 /**
  * Base
@@ -31,49 +34,38 @@ window.addEventListener("mousemove", (event) => {
 const scene = new THREE.Scene();
 
 // Lights
-const ambientLight = new THREE.AmbientLight(0xffffff, 1); // soft white light
-scene.add(ambientLight);
 
-const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
-directionalLight.position.set(2, 2, 2); // from above
+const directionalLight = new THREE.DirectionalLight(0xffffff, 5);
+directionalLight.position.set(5, 5, 5);
+directionalLight.castShadow = true;
 scene.add(directionalLight);
 
-const pointlight = new THREE.PointLight(0xffffff, 1);
-pointlight.position.set(2, 2, 2); // from above
-scene.add(pointlight);
-
-const rgbeloader = new RGBELoader();
-rgbeloader.load(
-  "./hdr/2k.hdr",
-  function (texture) {
-    texture.mapping = THREE.EquirectangularReflectionMapping;
-    scene.background = texture;
-    scene.environment = texture;
-  },
-  function (xhr) {
-    console.log((xhr.loaded / xhr.total) * 100 + "% loaded");
-  },
-  function (error) {
-    console.error("An error happened", error);
-  }
+const directionalLightHelper = new THREE.DirectionalLightHelper(
+  directionalLight
 );
+scene.add(directionalLightHelper);
+
+const pointLight = new THREE.PointLight(0xffffff, 2.5);
+pointLight.position.set(2, 2, 2);
+pointLight.castShadow = true;
+scene.add(pointLight);
+
+const pointLight2 = new THREE.PointLight(0xffffff, 2.5);
+pointLight2.position.set(-2, -2, -2);
+pointLight2.castShadow = true;
+scene.add(pointLight2);
 
 // Object
 let mesh;
 
-// Loader
+// GLTF Loader
 const loader = new GLTFLoader();
 loader.load(
-  scene10,
+  model7,
   function (gltf) {
     let pendant = gltf.scene;
-    pendant.position.set(1, 1, 1);
-    pendant.scale.set(5, 5, 5);
-
-    // Center the model
-    const box = new THREE.Box3().setFromObject(pendant);
-    const center = box.getCenter(new THREE.Vector3());
-    pendant.position.sub(center); // Center the model at the origin
+    pendant.position.set(0, 0, 0);
+    pendant.scale.set(0.3, 0.3, 0.3);
 
     mesh = pendant;
     scene.add(pendant);
@@ -104,9 +96,7 @@ function modelLoadedCallback() {
     0.1,
     1000
   );
-  camera.position.z = 25;
-  camera.position.x = 10;
-  camera.position.y = 10;
+  camera.position.set(0, 0, 15);
 
   scene.add(camera);
 
@@ -118,7 +108,9 @@ function modelLoadedCallback() {
 
   // Renderer
   const renderer = new THREE.WebGLRenderer({
-    canvas: canvas,
+    antialias: true,
+    canvas,
+    alpha: true,
   });
   renderer.setSize(sizes.width, sizes.height);
 
@@ -128,14 +120,12 @@ function modelLoadedCallback() {
   const tick = () => {
     const elapsedTime = clock.getElapsedTime();
 
-    // Update objects
-    // mesh.rotation.y = elapsedTime;
-
-    // Update camera position based on cursor
-    // camera.position.z = Math.cos(cursor.x * Math.PI * 2) * 2;
-    // camera.position.x = Math.sin(cursor.x * Math.PI * 2) * 2;
-    // camera.position.y = cursor.y * 3;
-    // camera.lookAt(mesh.position);
+    // Update directional light direction to match camera direction
+    const cameraDirection = new THREE.Vector3();
+    camera.getWorldDirection(cameraDirection);
+    directionalLight.position.copy(camera.position);
+    directionalLight.target.position.copy(camera.position).add(cameraDirection);
+    directionalLight.target.updateMatrixWorld();
 
     // Render
     controls.update();

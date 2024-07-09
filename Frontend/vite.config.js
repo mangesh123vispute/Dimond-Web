@@ -1,5 +1,5 @@
 export default {
-  assetsInclude: ["**/*.gltf", "**/*.glb"],
+  assetsInclude: ["**/*.gltf", "**/*.glb", "**/*obj", "**/*.png"],
   root: "src/",
   publicDir: "../static/",
   base: "./",
