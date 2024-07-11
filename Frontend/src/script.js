@@ -157,10 +157,6 @@ function adjustLights(bbox) {
   const size = bbox.getSize(new THREE.Vector3());
   const maxDim = Math.max(size.x, size.y, size.z);
 
-  // Add ambient light
-  const ambientLight = new THREE.AmbientLight(0xffffff, 0.3);
-  scene.add(ambientLight);
-
   // Add directional lights from all 8 directions
   const directionalLight1 = new THREE.DirectionalLight(0xffffff, 5);
   directionalLight1.position.set(maxDim, maxDim, maxDim);
@@ -201,6 +197,22 @@ function adjustLights(bbox) {
   directionalLight8.position.set(maxDim, maxDim, -maxDim);
   directionalLight8.target = modelObject;
   scene.add(directionalLight8);
+
+  // Add directional lights from top, bottom, and camera direction
+  const directionalLightTop = new THREE.DirectionalLight(0xffffff, 5);
+  directionalLightTop.position.set(0, maxDim * 2, 0); // Above the model
+  directionalLightTop.target = modelObject;
+  scene.add(directionalLightTop);
+
+  const directionalLightBottom = new THREE.DirectionalLight(0xffffff, 5);
+  directionalLightBottom.position.set(0, -maxDim * 2, 0); // Below the model
+  directionalLightBottom.target = modelObject;
+  scene.add(directionalLightBottom);
+
+  const directionalLightCamera = new THREE.DirectionalLight(0xffffff, 5);
+  directionalLightCamera.position.set(0, 0, -maxDim * 2); // Behind the camera
+  directionalLightCamera.target = modelObject;
+  scene.add(directionalLightCamera);
 
   // Add point lights around the model
   const pointLight1 = new THREE.PointLight(0xffffff, 7, 100);

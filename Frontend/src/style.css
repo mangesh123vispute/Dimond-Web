@@ -12,7 +12,7 @@
     width: 100%; /* Make the canvas take the full width of the page */
     height: 100%; /* Make the canvas take the full height of the page */
     display: block; /* Display the canvas as a block element */
-    background: url('./background.jpg') no-repeat center center; /* Set the background image */
+    background: url('./image.png') no-repeat center center; /* Set the background image */
     background-size: cover; 
 }
 
