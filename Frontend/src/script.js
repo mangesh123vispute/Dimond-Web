@@ -1,7 +1,7 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
-import model7 from "./model7.glb";
+import model from "./model8.glb";
 
 /**
  * Base
@@ -19,7 +19,7 @@ const sizes = {
 const scene = new THREE.Scene();
 
 // Lights
-const directionalLight = new THREE.DirectionalLight(0xffffff, 5);
+const directionalLight = new THREE.DirectionalLight(0xffffff, 8);
 directionalLight.position.set(5, 5, 5);
 directionalLight.castShadow = true;
 
@@ -32,14 +32,9 @@ directionalLight.shadow.camera.bottom = -10;
 scene.add(directionalLight);
 
 const pointLight = new THREE.PointLight(0xffffff, 3);
-pointLight.position.set(2, 2, 2);
+pointLight.position.set(0, 5, 0);
 pointLight.castShadow = true;
 scene.add(pointLight);
-
-const pointLight2 = new THREE.PointLight(0xffffff, 3);
-pointLight2.position.set(-2, -2, -2);
-pointLight2.castShadow = true;
-scene.add(pointLight2);
 
 // Camera
 const camera = new THREE.PerspectiveCamera(
@@ -48,7 +43,7 @@ const camera = new THREE.PerspectiveCamera(
   0.1,
   1000
 );
-camera.position.set(0, 0, 15);
+camera.position.set(15, 5, -5);
 
 scene.add(camera);
 
@@ -101,12 +96,32 @@ window.addEventListener("dblclick", () => {
 // GLTF Loader
 const loader = new GLTFLoader();
 loader.load(
-  model7,
+  model,
   function (gltf) {
     let pendant = gltf.scene;
-    pendant.position.set(0, 0, 0);
-    pendant.scale.set(0.3, 0.3, 0.3);
 
+    // Compute the bounding box of the model
+    const bbox = new THREE.Box3().setFromObject(pendant);
+    const size = bbox.getSize(new THREE.Vector3());
+
+    // Compute the max dimension to ensure consistent scaling
+    const maxDim = Math.max(size.x, size.y, size.z);
+
+    // Desired size
+    const desiredSize = 10;
+    const scale = desiredSize / maxDim;
+
+    // Apply scale to model
+    pendant.scale.set(scale, scale, scale);
+
+    // Recompute bounding box after scaling
+    const bboxScaled = new THREE.Box3().setFromObject(pendant);
+    const centerScaled = bboxScaled.getCenter(new THREE.Vector3());
+
+    // Adjust the model's position to center it
+    pendant.position.sub(centerScaled);
+
+    // Add model to the scene
     scene.add(pendant);
     modelLoadedCallback();
   },
