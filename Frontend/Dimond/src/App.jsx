@@ -20,22 +20,33 @@ import { RGBELoader } from "three-stdlib";
 function Ring({ map, ...props }) {
   const { nodes, materials } = useGLTF("/model8.glb");
   console.log("This is the nodes", nodes);
-
   console.log("This is the materials", materials);
 
   return (
     <group {...props} dispose={null}>
-      {Object.keys(nodes)
-        .filter((key) => key.startsWith("Diamond_Round"))
-        .map((key, index) => (
-          <mesh key={key} geometry={nodes[key].geometry}>
-            <MeshRefractionMaterial
-              envMap={map}
-              aberrationStrength={0.02}
-              toneMapped={false}
-            />
-          </mesh>
-        ))}
+      {Object.keys(nodes).map((key) => {
+        if (key.startsWith("Diamond_Round")) {
+          return (
+            <mesh key={key} geometry={nodes[key].geometry}>
+              <MeshRefractionMaterial
+                envMap={map}
+                aberrationStrength={0.02}
+                toneMapped={false}
+              />
+            </mesh>
+          );
+        } else {
+          return (
+            <mesh
+              key={key}
+              geometry={nodes[key].geometry}
+              material={materials["perfect gold 2.002"]}
+            >
+              {/* Optionally, customize materials or add properties here */}
+            </mesh>
+          );
+        }
+      })}
     </group>
   );
 }
@@ -46,11 +57,11 @@ export default function App() {
     "https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/peppermint_powerplant_2_1k.hdr"
   );
   texture.mapping = THREE.EquirectangularReflectionMapping;
+
   return (
-    <Canvas shadows camera={{ position: [20, 20, 20], fov: 75 }} dpr={[1, 2]}>
+    <Canvas shadows camera={{ position: [15, 15, 15], fov: 75 }} dpr={[1, 2]}>
       <OrbitControls />
-      <axesHelper position={[0, 0, 0]} scale={5} />
-      <color attach="background" args={["#f0f0f0"]} />
+      <color attach="background" args={["#ffffff"]} />
       <ambientLight />
       <Environment map={texture} />
       <PresentationControls
@@ -64,7 +75,7 @@ export default function App() {
       >
         <group position={[0, -3, 0]}>
           <Center position={[0, 0, 0]}>
-            <Ring map={texture} scale={0.5} />
+            <Ring map={texture} scale={1} />
           </Center>
           <AccumulativeShadows
             temporal
