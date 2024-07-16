@@ -18,7 +18,7 @@ import { EffectComposer, Bloom } from "@react-three/postprocessing";
 import { RGBELoader } from "three-stdlib";
 
 function Ring({ map, ...props }) {
-  const { nodes, materials } = useGLTF("/model8.glb");
+  const { nodes, materials } = useGLTF("/model1.glb");
   console.log("This is the nodes", nodes);
   console.log("This is the materials", materials);
 
@@ -40,7 +40,7 @@ function Ring({ map, ...props }) {
             <mesh
               key={key}
               geometry={nodes[key].geometry}
-              material={materials["perfect gold 2.002"]}
+              material={materials["perfect gold"]}
             >
               {/* Optionally, customize materials or add properties here */}
             </mesh>
@@ -59,7 +59,7 @@ export default function App() {
   texture.mapping = THREE.EquirectangularReflectionMapping;
 
   return (
-    <Canvas shadows camera={{ position: [15, 15, 15], fov: 75 }} dpr={[1, 2]}>
+    <Canvas shadows camera={{ position: [15, 15, 15], fov: 75 }}>
       <OrbitControls />
       <color attach="background" args={["#ffffff"]} />
       <ambientLight />
